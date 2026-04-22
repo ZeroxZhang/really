@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>really — 深度刨根问底诊断</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-1: #f0f7f4;
+  --bg-2: #ffffff;
+  --card-bg: rgba(255,255,255,0.72);
+  --primary: #2d6a4f;
+  --primary-light: #4a9b7f;
+  --accent: #e07a5f;
+  --accent-soft: rgba(224,122,95,0.15);
+  --text: #2d3436;
+  --text-secondary: #5a6b66;
+  --glass-border: rgba(255,255,255,0.6);
+  --shadow: 0 8px 32px rgba(45,106,79,0.08);
+}
+
+body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  font-family: 'Noto Sans SC', 'Inter', system-ui, sans-serif;
+  background: linear-gradient(135deg, var(--bg-1) 0%, #e8f5e9 40%, var(--bg-2) 100%);
+  color: var(--text);
+  position: relative;
+}
+
+/* 弥散光影装饰 */
+body::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  top: -200px; right: -100px;
+  background: radial-gradient(circle, rgba(74,155,127,0.18) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  bottom: -150px; left: -100px;
+  background: radial-gradient(circle, rgba(224,122,95,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  width: 1920px;
+  height: 1080px;
+  padding: 50px 70px 45px 70px;
+  display: grid;
+  grid-template-rows: 95px 110px 300px 155px 195px 80px;
+  gap: 16px;
+  align-content: start;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+}
+.header-left h1 {
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.header-left .subtitle {
+  font-size: 18px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 40px;
+  padding: 10px 24px;
+  box-shadow: var(--shadow);
+}
+.badge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.badge-green { background: rgba(45,106,79,0.12); color: var(--primary); }
+.badge-orange { background: var(--accent-soft); color: var(--accent); }
+
+/* ===== AXIOMS ===== */
+.axioms {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.axiom-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.axiom-card .num {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary-light);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.axiom-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+.axiom-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ===== LENSES ===== */
+.lenses {
+  display: grid;
+  grid-template-rows: 32px 1fr;
+  gap: 12px;
+}
+.lens-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lens-title h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.lens-divider {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--primary-light), transparent);
+}
+.lens-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+}
+.lens-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 14px 14px 12px 14px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.lens-card .lens-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.lens-card .lens-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.lens-card .lens-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-light);
+  background: rgba(45,106,79,0.08);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.lens-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+.lens-card .lens-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  display: inline-block;
+  align-self: flex-start;
+}
+.tag-core { background: rgba(45,106,79,0.1); color: var(--primary); }
+.tag-ext { background: var(--accent-soft); color: var(--accent); }
+.lens-card p {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+.lens-card.core {
+  border-top: 3px solid var(--primary-light);
+}
+.lens-card.ext {
+  border-top: 3px solid var(--accent);
+}
+
+/* ===== WORKFLOW ===== */
+.workflow {
+  display: grid;
+  grid-template-rows: 32px 1fr;
+  gap: 12px;
+}
+.flow-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.flow-title h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.flow-track {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: var(--shadow);
+}
+.flow-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 6px 4px;
+  position: relative;
+}
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-light), transparent);
+}
+.flow-step .ph {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin-bottom: 5px;
+}
+.flow-step h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+.flow-step p {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ===== SCENARIOS ===== */
+.scenarios {
+  display: grid;
+  grid-template-rows: 32px 1fr;
+  gap: 12px;
+}
+.scen-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.scen-title h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.scen-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+.scen-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 14px 12px 12px 12px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.scen-card .scen-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.scen-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+.scen-card p {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 0 28px;
+  box-shadow: var(--shadow);
+}
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.footer-left .logo {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--primary);
+}
+.footer-left .desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.footer-right span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.footer-right .gh-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  background: rgba(45,106,79,0.08);
+  padding: 6px 16px;
+  border-radius: 20px;
+  transition: background 0.2s;
+}
+
+/* 额外弥散装饰点 */
+.decor-1 {
+  position: absolute;
+  width: 300px; height: 300px;
+  top: 300px; left: 50px;
+  background: radial-gradient(circle, rgba(74,155,127,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+.decor-2 {
+  position: absolute;
+  width: 250px; height: 250px;
+  bottom: 200px; right: 80px;
+  background: radial-gradient(circle, rgba(224,122,95,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+</style>
+</head>
+<body>
+<div class="decor-1"></div>
+<div class="decor-2"></div>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>really</h1>
+      <span class="subtitle">深度刨根问底诊断 · Deep Multi-Disciplinary Root-Cause Inquiry</span>
+    </div>
+    <div class="header-right">
+      <span class="badge badge-green">10 学科</span>
+      <span class="badge badge-green">40+ 框架</span>
+      <span class="badge badge-orange">Apache 2.0</span>
+    </div>
+  </div>
+
+  <!-- AXIOMS -->
+  <div class="axioms">
+    <div class="axiom-card">
+      <div class="num">Axiom 01</div>
+      <h3>表象 ≠ 真实</h3>
+      <p>90% 的问题只是症状。找到生成性问题 —— 解决它，其他问题自然消散。</p>
+    </div>
+    <div class="axiom-card">
+      <div class="num">Axiom 02</div>
+      <h3>单学科诊断 = 盲人摸象</h3>
+      <p>真正的洞察发生在学科交叉地带。单一视角的结论大概率是片面的。</p>
+    </div>
+    <div class="axiom-card">
+      <div class="num">Axiom 03</div>
+      <h3>不升维 = 失败</h3>
+      <p>每次诊断必须提供信息增量，把用户带到更高的 vantage point。</p>
+    </div>
+  </div>
+
+  <!-- 10 LENSES -->
+  <div class="lenses">
+    <div class="lens-title">
+      <h2>🔍 十镜诊断系统</h2>
+      <div class="lens-divider"></div>
+      <span style="font-size:12px;color:var(--text-secondary);white-space:nowrap;">核心五镜必走 · 扩展五镜条件触发</span>
+    </div>
+    <div class="lens-grid">
+      <div class="lens-card core">
+        <div class="lens-header">
+          <span class="lens-icon">🧠</span>
+          <span class="lens-num">01</span>
+        </div>
+        <h4>心理学</h4>
+        <span class="lens-tag tag-core">核心</span>
+        <p>认知偏差、防御机制、动机结构、情绪底色</p>
+      </div>
+      <div class="lens-card core">
+        <div class="lens-header">
+          <span class="lens-icon">🏛️</span>
+          <span class="lens-num">02</span>
+        </div>
+        <h4>社会学</h4>
+        <span class="lens-tag tag-core">核心</span>
+        <p>结构性力量、参照群体、地位博弈、制度约束</p>
+      </div>
+      <div class="lens-card core">
+        <div class="lens-header">
+          <span class="lens-icon">📖</span>
+          <span class="lens-num">03</span>
+        </div>
+        <h4>哲学</h4>
+        <span class="lens-tag tag-core">核心</span>
+        <p>认识论有效性、范畴错误、目的论假设</p>
+      </div>
+      <div class="lens-card core">
+        <div class="lens-header">
+          <span class="lens-icon">📈</span>
+          <span class="lens-num">04</span>
+        </div>
+        <h4>市场营销</h4>
+        <span class="lens-tag tag-core">核心</span>
+        <p>需求真实性、品类归属、定位逻辑、增长引擎</p>
+      </div>
+      <div class="lens-card core">
+        <div class="lens-header">
+          <span class="lens-icon">⚙️</span>
+          <span class="lens-num">05</span>
+        </div>
+        <h4>管理学</h4>
+        <span class="lens-tag tag-core">核心</span>
+        <p>激励对齐、系统结构、反馈回路、组织能力</p>
+      </div>
+      <div class="lens-card ext">
+        <div class="lens-header">
+          <span class="lens-icon">💰</span>
+          <span class="lens-num">06</span>
+        </div>
+        <h4>经济学</h4>
+        <span class="lens-tag tag-ext">扩展</span>
+        <p>主观价值、知识分散、交易成本、博弈结构</p>
+      </div>
+      <div class="lens-card ext">
+        <div class="lens-header">
+          <span class="lens-icon">🌊</span>
+          <span class="lens-num">07</span>
+        </div>
+        <h4>复杂性科学</h4>
+        <span class="lens-tag tag-ext">扩展</span>
+        <p>涌现、非线性、路径依赖、反脆弱</p>
+      </div>
+      <div class="lens-card ext">
+        <div class="lens-header">
+          <span class="lens-icon">🎭</span>
+          <span class="lens-num">08</span>
+        </div>
+        <h4>人类学与符号学</h4>
+        <span class="lens-tag tag-ext">扩展</span>
+        <p>文化结构、仪式、深层意义、身份认同</p>
+      </div>
+      <div class="lens-card ext">
+        <div class="lens-header">
+          <span class="lens-icon">🎯</span>
+          <span class="lens-num">09</span>
+        </div>
+        <h4>决策科学</h4>
+        <span class="lens-tag tag-ext">扩展</span>
+        <p>不确定性决策、专家直觉、鲁棒性、可选性</p>
+      </div>
+      <div class="lens-card ext">
+        <div class="lens-header">
+          <span class="lens-icon">🧬</span>
+          <span class="lens-num">10</span>
+        </div>
+        <h4>认知神经科学</h4>
+        <span class="lens-tag tag-ext">扩展</span>
+        <p>DMN/TPN、杏仁核回路、多巴胺系统、神经可塑性</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKFLOW -->
+  <div class="workflow">
+    <div class="flow-title">
+      <h2>📐 工作流程</h2>
+      <div class="lens-divider"></div>
+    </div>
+    <div class="flow-track">
+      <div class="flow-step">
+        <span class="ph">PHASE 0</span>
+        <h4>接收问题</h4>
+        <p>完整倾听 +<br>回声确认</p>
+      </div>
+      <div class="flow-step">
+        <span class="ph">PHASE 1</span>
+        <h4>表层解构</h4>
+        <p>语言陷阱 /<br>隐含假设 / 框架错位</p>
+      </div>
+      <div class="flow-step">
+        <span class="ph">PHASE 2</span>
+        <h4>十镜透视</h4>
+        <p>核心五镜必走<br>+ 扩展五镜条件触发</p>
+      </div>
+      <div class="flow-step">
+        <span class="ph">PHASE 3</span>
+        <h4>根本原因合成</h4>
+        <p>冲突地图 +<br>生成性问题识别</p>
+      </div>
+      <div class="flow-step">
+        <span class="ph">PHASE 4</span>
+        <h4>升维 Elevation</h4>
+        <p>Zoom Out /<br>Zoom Up / 跨域映射</p>
+      </div>
+      <div class="flow-step">
+        <span class="ph">PHASE 5</span>
+        <h4>分析报告</h4>
+        <p>7 章节结构化<br>诊断报告输出</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIOS -->
+  <div class="scenarios">
+    <div class="scen-title">
+      <h2>🎯 应用场景</h2>
+      <div class="lens-divider"></div>
+    </div>
+    <div class="scen-grid">
+      <div class="scen-card">
+        <div class="scen-icon">🚀</div>
+        <h4>创业与商业决策</h4>
+        <p>JTBD + 奥派经济学 + 博弈论判断需求真伪</p>
+      </div>
+      <div class="scen-card">
+        <div class="scen-icon">💼</div>
+        <h4>职业困境与转型</h4>
+        <p>Adler 课题分离 + Bourdieu 场域 + 决策科学</p>
+      </div>
+      <div class="scen-card">
+        <div class="scen-icon">🤝</div>
+        <h4>人际关系冲突</h4>
+        <p>依恋理论 + Goffman 拟剧论 + 杏仁核回路分析</p>
+      </div>
+      <div class="scen-card">
+        <div class="scen-icon">📦</div>
+        <h4>产品设计与定位</h4>
+        <p>定位理论 + Sharp 渗透率 + 品类战略诊断</p>
+      </div>
+      <div class="scen-card">
+        <div class="scen-icon">🔄</div>
+        <h4>系统性困境</h4>
+        <p>Senge 系统基模 + Argyris 双环 + 复杂性科学</p>
+      </div>
+      <div class="scen-card">
+        <div class="scen-icon">🔮</div>
+        <h4>自我认知与意义</h4>
+        <p>海德格尔此在 + Nietzsche 价值重估 + DMN 分析</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      <span class="logo">really</span>
+      <span class="desc">不是回答问题，是帮你看清问题本身是不是问题。</span>
+    </div>
+    <div class="footer-right">
+      <span>📝 40+ 深度框架 · 五维度分析</span>
+      <a class="gh-link" href="https://github.com/ZeroxZhang/really">github.com/ZeroxZhang/really</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

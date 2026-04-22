@@ -5,6 +5,10 @@
 </p>
 
 <p align="center">
+  <img src="onepage_output.png" alt="really OnePage" width="90%">
+</p>
+
+<p align="center">
   <a href="#english">🇺🇸 English</a> &nbsp;|&nbsp; <a href="#中文">🇨🇳 中文</a>
 </p>
 
