@@ -55,15 +55,15 @@
 ### Workflow
 
 ```
-Phase 0: Receive Problem      → Full listening + echo confirmation
-Phase 1: Surface Deconstruction → Language traps / Hidden assumptions / Frame misalignment
-Phase 2: Ten-Lens Perspective   → Core five mandatory + extended five conditional
-Phase 3: Root Cause Synthesis   → Conflict map + generative problem identification
-Phase 4: Elevation              → Zoom Out / Zoom Up / Cross-domain mapping
-Phase 5: Complete Analysis Report → 7-section structured diagnosis report
+Phase 0: Receive Problem      → Concise input + multiple-choice confirmation
+Phase 1: Surface Deconstruction → Auto-scan all three audits + one choice
+Phase 2: Ten-Lens Perspective   → Batch auto-run core five + conditional extended five + one choice
+Phase 3: Root Cause Synthesis   → Auto synthesis + one choice
+Phase 4: Elevation              → Auto elevation (no pause)
+Phase 5: Complete Analysis Report → Auto generation + final choice
 ```
 
-Each lens pauses for dialogue with the user. No one-shot mega-analysis.
+Core philosophy: **batch auto-run the analysis, pause only at decision points with multiple-choice questions.**
 
 ### Reference Framework Depth
 
@@ -158,7 +158,7 @@ really/
 ### Design Principles
 
 - **Academic depth, human language** — Every framework translated into actionable diagnostic language
-- **Dialogue at every step** — No one-shot mega-output; pause after each lens
+- **Batch auto-run, pause at choices** — Analyze in batches, pause only for multiple-choice confirmation
 - **Always elevate** — A diagnosis that does not elevate is a failed diagnosis
 - **Face conflicts head-on** — When lenses contradict, surface the contradiction instead of smoothing it over
 - **No comfort food** — Users need clarity, not comfort
@@ -206,15 +206,15 @@ really/
 ### 工作流程
 
 ```
-Phase 0: 接收问题          → 完整倾听 + 回声确认
-Phase 1: 表层解构（三重审计） → 语言陷阱 / 隐含假设 / 框架错位
-Phase 2: 十镜透视           → 核心五镜必走 + 扩展五镜条件触发
-Phase 3: 根本原因合成        → 冲突地图 + 生成性问题识别
-Phase 4: 升维（Elevation）   → Zoom Out / Zoom Up / 跨域映射
-Phase 5: 完整分析报告        → 7 章节结构化诊断报告
+Phase 0: 接收问题          → 精简输入 + 选择题确认
+Phase 1: 表层解构（三重审计） → 自动扫描 + 一个选择题
+Phase 2: 十镜透视           → 核心五镜批量自动走完 + 扩展五镜条件自动触发 + 统一选择
+Phase 3: 根本原因合成        → 自动合成 + 一个选择题
+Phase 4: 升维（Elevation）   → 自动升维，不暂停
+Phase 5: 完整分析报告        → 自动生成 + 终局选择题
 ```
 
-每个 Lens 走完都会停下来与用户对话，不是一次性输出大段分析。
+核心理念：**分析阶段批量自动推进，只在关键决策点用选择题暂停。**
 
 ### 参考框架深度
 
@@ -310,7 +310,7 @@ really/
 ### 设计原则
 
 - **学术深度，人话表达** — 每个框架都翻译成可操作的诊断语言
-- **每一步都对话** — 不做一次性大段输出，每镜一停
+- **批量自动推进，决策点用选择题** — 分析阶段自动走完，只在关键节点暂停
 - **永远升维** — 不升维的诊断是失败的诊断
 - **直面冲突** — 不同 lens 的结论矛盾时，亮出矛盾而非和稀泥
 - **不给鸡汤** — 用户需要 clarity，不是 comfort
